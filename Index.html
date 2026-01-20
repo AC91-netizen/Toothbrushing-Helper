@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Toothbrushing Helper</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #0a3d62;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 2em;
+    margin-bottom: 10px;
+  }
+
+  #instruction {
+    font-size: 1.6em;
+    margin: 20px 0;
+  }
+
+  #mouth {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    max-width: 300px;
+    margin: 30px auto;
+  }
+
+  .tooth {
+    height: 70px;
+    border-radius: 10px;
+    background: #1e90ff;
+    opacity: 0.3;
+    transition: 0.3s;
+  }
+
+  .active {
+    opacity: 1;
+    background: #00ffcc;
+    box-shadow: 0 0 20px #00ffcc;
+  }
+
+  button {
+    font-size: 1.5em;
+    padding: 15px 30px;
+    border-radius: 10px;
+    border: none;
+    background: #ffcc00;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+
+  button:hover {
+    transform: scale(1.05);
+  }
+</style>
+</head>
+
+<body>
+
+<h1>🪥 Let’s Brush Teeth!</h1>
+<div id="instruction">Press START</div>
+
+<div id="mouth">
+  <div class="tooth" id="t0"></div>
+  <div class="tooth" id="t1"></div>
+  <div class="tooth" id="t2"></div>
+
+  <div class="tooth" id="t3"></div>
+  <div class="tooth" id="t4"></div>
+  <div class="tooth" id="t5"></div>
+
+  <div class="tooth" id="t6"></div>
+  <div class="tooth" id="t7"></div>
+  <div class="tooth" id="t8"></div>
+</div>
+
+<button onclick="nextStep()">START</button>
+
+<script>
+const steps = [
+  { text: "AHH – TOP LEFT", active: [0] },
+  { text: "AHH – TOP MIDDLE", active: [1] },
+  { text: "AHH – TOP RIGHT", active: [2] },
+
+  { text: "AHH – BOTTOM LEFT", active: [6] },
+  { text: "AHH – BOTTOM MIDDLE", active: [7] },
+  { text: "AHH – BOTTOM RIGHT", active: [8] },
+
+  { text: "EEE – FRONT LEFT", active: [3] },
+  { text: "EEE – FRONT MIDDLE", active: [4] },
+  { text: "EEE – FRONT RIGHT", active: [5] },
+
+  { text: "ALL DONE! GREAT BRUSHING! 🎉", active: [] }
+];
+
+let currentStep = -1;
+
+function nextStep() {
+  currentStep++;
+
+  document.querySelectorAll(".tooth").forEach(t => {
+    t.classList.remove("active");
+  });
+
+  if (currentStep >= steps.length) return;
+
+  document.getElementById("instruction").innerText =
+    steps[currentStep].text;
+
+  steps[currentStep].active.forEach(i => {
+    document.getElementById("t" + i).classList.add("active");
+  });
+}
+</script>
+
+</body>
+</html>
