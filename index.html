@@ -16,7 +16,6 @@
 
   h1 {
     font-size: 2em;
-    margin-bottom: 10px;
   }
 
   #instruction {
@@ -27,23 +26,52 @@
   #mouth {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    max-width: 300px;
+    gap: 14px;
+    max-width: 320px;
     margin: 30px auto;
   }
 
   .tooth {
-    height: 70px;
-    border-radius: 10px;
-    background: #1e90ff;
+    width: 90px;
+    height: 120px;
+    background: #ffffff;
+    border-radius: 0 0 45px 45px;
     opacity: 0.3;
+    position: relative;
     transition: 0.3s;
+  }
+
+  /* Bottom teeth flip */
+  .bottom {
+    transform: rotate(180deg);
+  }
+
+  /* Front teeth slightly smaller */
+  .front {
+    height: 100px;
+  }
+
+  .tooth::before {
+    content: "";
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 25px;
+    background: #fff;
+    border-radius: 0 0 20px 20px;
   }
 
   .active {
     opacity: 1;
-    background: #00ffcc;
-    box-shadow: 0 0 20px #00ffcc;
+    box-shadow: 0 0 25px #00ffcc;
+    animation: wiggle 0.6s infinite alternate;
+  }
+
+  @keyframes wiggle {
+    from { transform: translateY(0); }
+    to { transform: translateY(4px); }
   }
 
   button {
@@ -68,17 +96,20 @@
 <div id="instruction">Press START</div>
 
 <div id="mouth">
+  <!-- TOP TEETH -->
   <div class="tooth" id="t0"></div>
   <div class="tooth" id="t1"></div>
   <div class="tooth" id="t2"></div>
 
-  <div class="tooth" id="t3"></div>
-  <div class="tooth" id="t4"></div>
-  <div class="tooth" id="t5"></div>
+  <!-- FRONT TEETH -->
+  <div class="tooth front" id="t3"></div>
+  <div class="tooth front" id="t4"></div>
+  <div class="tooth front" id="t5"></div>
 
-  <div class="tooth" id="t6"></div>
-  <div class="tooth" id="t7"></div>
-  <div class="tooth" id="t8"></div>
+  <!-- BOTTOM TEETH -->
+  <div class="tooth bottom" id="t6"></div>
+  <div class="tooth bottom" id="t7"></div>
+  <div class="tooth bottom" id="t8"></div>
 </div>
 
 <button onclick="nextStep()">START</button>
@@ -97,7 +128,7 @@ const steps = [
   { text: "EEE – FRONT MIDDLE", active: [4] },
   { text: "EEE – FRONT RIGHT", active: [5] },
 
-  { text: "ALL DONE! GREAT BRUSHING! 🎉", active: [] }
+  { text: "ALL DONE! AMAZING BRUSHING! 🦷✨", active: [] }
 ];
 
 let currentStep = -1;
@@ -105,20 +136,13 @@ let currentStep = -1;
 function nextStep() {
   currentStep++;
 
-  document.querySelectorAll(".tooth").forEach(t => {
-    t.classList.remove("active");
-  });
+  document.querySelectorAll(".tooth").forEach(t =>
+    t.classList.remove("active")
+  );
 
   if (currentStep >= steps.length) return;
 
   document.getElementById("instruction").innerText =
     steps[currentStep].text;
 
-  steps[currentStep].active.forEach(i => {
-    document.getElementById("t" + i).classList.add("active");
-  });
-}
-</script>
-
-</body>
-</html>
+  steps[currentStep].active.forEach(i
