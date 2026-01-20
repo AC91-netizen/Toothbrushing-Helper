@@ -13,20 +13,21 @@ body {
   padding: 20px;
 }
 h1 { font-size: 2em; }
-#instruction { font-size: 1.6em; margin: 20px 0; }
+#instruction { font-size: 1.6em; margin: 10px 0; }
 .timer { font-size: 1.4em; margin-bottom: 15px; }
 
-/* Gums container */
-.gum {
-  background: #ff9aa2;
-  padding: 12px;
-  border-radius: 30px;
-  margin: 10px auto;
-  max-width: 440px;
+/* Mouth container */
+.mouth {
+  position: relative;
+  display: inline-block;
+  margin: 20px auto;
+}
+
+/* Gum rows */
+.gum-row {
   display: flex;
   justify-content: center;
   gap: 6px;
-  flex-wrap: wrap;
 }
 
 /* Tooth shape */
@@ -52,6 +53,17 @@ h1 { font-size: 2em; }
 }
 .active { opacity: 1; box-shadow: 0 0 18px #00ffcc; }
 
+/* Tongue */
+.tongue {
+  width: 240px;
+  height: 40px;
+  background: #ff4d4d;
+  border-radius: 50% / 50%;
+  margin: -15px auto 20px auto;
+  display: none;
+}
+
+/* Button */
 button {
   font-size: 1.4em;
   padding: 12px 25px;
@@ -70,56 +82,65 @@ button:active { transform: scale(0.95); }
 <div id="instruction">Press START</div>
 <div class="timer" id="timer"></div>
 
-<!-- TOP TEETH -->
-<div class="gum top" id="topLeft"></div>
-<div class="gum top" id="topMiddle"></div>
-<div class="gum top" id="topRight"></div>
+<div class="mouth" id="ahhMouth">
+  <!-- Top row AHH -->
+  <div class="gum-row" id="topRow"></div>
+  <!-- Tongue -->
+  <div class="tongue" id="tongue"></div>
+  <!-- Bottom row AHH -->
+  <div class="gum-row" id="bottomRow"></div>
+</div>
 
-<!-- BOTTOM TEETH -->
-<div class="gum bottom" id="bottomLeft"></div>
-<div class="gum bottom" id="bottomMiddle"></div>
-<div class="gum bottom" id="bottomRight"></div>
+<!-- EEE front teeth (hidden until AHH done) -->
+<div class="mouth" id="eeeMouth" style="display:none;">
+  <div class="gum-row" id="eeeLeft"></div>
+  <div class="gum-row" id="eeeMiddle"></div>
+  <div class="gum-row" id="eeeRight"></div>
+</div>
 
-<!-- FRONT TEETH -->
-<div class="gum front" id="frontLeft"></div>
-<div class="gum front" id="frontMiddle"></div>
-<div class="gum front" id="frontRight"></div>
-
-<button onclick="nextStep()" id="nextBtn">START</button>
+<button onclick="nextStep()" id="nextBtn">START / NEXT</button>
 
 <script>
-// Build teeth for each section
-const createTeeth = (containerId, count) => {
+// Create teeth
+function createTeeth(containerId, count){
   const container = document.getElementById(containerId);
   for(let i=0;i<count;i++){
     const tooth = document.createElement('div');
     tooth.classList.add('tooth');
     container.appendChild(tooth);
   }
-};
+}
 
-// Section definitions
+// Define sections with IDs and teeth per subsection
 const sections = [
-  { name:"AHH TOP LEFT", id:"topLeft", teeth:5 },
-  { name:"AHH TOP MIDDLE", id:"topMiddle", teeth:4 },
-  { name:"AHH TOP RIGHT", id:"topRight", teeth:5 },
+  // AHH TOP
+  { name:"AHH TOP LEFT", container:"topRow", indices:[0,1,2,3,4] },
+  { name:"AHH TOP MIDDLE", container:"topRow", indices:[5,6,7,8] },
+  { name:"AHH TOP RIGHT", container:"topRow", indices:[9,10,11,12,13] },
 
-  { name:"AHH BOTTOM LEFT", id:"bottomLeft", teeth:5 },
-  { name:"AHH BOTTOM MIDDLE", id:"bottomMiddle", teeth:4 },
-  { name:"AHH BOTTOM RIGHT", id:"bottomRight", teeth:5 },
+  // AHH BOTTOM
+  { name:"AHH BOTTOM LEFT", container:"bottomRow", indices:[0,1,2,3,4] },
+  { name:"AHH BOTTOM MIDDLE", container:"bottomRow", indices:[5,6,7,8] },
+  { name:"AHH BOTTOM RIGHT", container:"bottomRow", indices:[9,10,11,12,13] },
 
-  { name:"EEE FRONT LEFT", id:"frontLeft", teeth:5 },
-  { name:"EEE FRONT MIDDLE", id:"frontMiddle", teeth:4 },
-  { name:"EEE FRONT RIGHT", id:"frontRight", teeth:5 },
+  // EEE FRONT
+  { name:"EEE FRONT LEFT", container:"eeeLeft", indices:[0,1,2,3,4] },
+  { name:"EEE FRONT MIDDLE", container:"eeeMiddle", indices:[0,1,2,3] },
+  { name:"EEE FRONT RIGHT", container:"eeeRight", indices:[0,1,2,3,4] }
 ];
 
-sections.forEach(sec => createTeeth(sec.id, sec.teeth));
+// Build teeth in containers
+createTeeth("topRow",14);
+createTeeth("bottomRow",14);
+createTeeth("eeeLeft",5);
+createTeeth("eeeMiddle",4);
+createTeeth("eeeRight",5);
 
 let currentStep = -1;
 let timerInterval;
 let remainingTime = 20;
 
-function nextStep() {
+function nextStep(){
   // Stop previous timer
   if(timerInterval) clearInterval(timerInterval);
   remainingTime = 20;
@@ -132,16 +153,30 @@ function nextStep() {
   if(currentStep >= sections.length){
     document.getElementById('instruction').innerText = "ALL DONE! AMAZING BRUSHING! 🦷✨";
     document.getElementById('timer').innerText = "";
-    document.getElementById('nextBtn').style.display = "none";
+    document.getElementById('nextBtn').style.display="none";
+    document.getElementById('tongue').style.display="none";
     return;
   }
 
   const sec = sections[currentStep];
   document.getElementById('instruction').innerText = `Brush ${sec.name}`;
-  
-  // Highlight teeth in this section
-  const container = document.getElementById(sec.id);
-  container.querySelectorAll('.tooth').forEach(t => t.classList.add('active'));
+
+  // Show/hide sections
+  if(currentStep<6){ // first 6 are AHH
+    document.getElementById('ahhMouth').style.display="block";
+    document.getElementById('eeeMouth').style.display="none";
+    document.getElementById('tongue').style.display="block";
+  } else { // EEE
+    document.getElementById('ahhMouth').style.display="none";
+    document.getElementById('eeeMouth').style.display="block";
+    document.getElementById('tongue').style.display="none";
+  }
+
+  // Highlight teeth in this subsection
+  const container = document.getElementById(sec.container).children;
+  sec.indices.forEach(i=>{
+    if(container[i]) container[i].classList.add('active');
+  });
 
   // Start timer
   document.getElementById('timer').innerText = `Time left: ${remainingTime}s`;
