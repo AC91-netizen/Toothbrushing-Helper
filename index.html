@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>Toothbrushing Helper</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <style>
 body {
   font-family: Arial, sans-serif;
@@ -13,153 +12,148 @@ body {
   text-align: center;
   padding: 20px;
 }
-
 h1 { font-size: 2em; }
+#instruction { font-size: 1.6em; margin: 20px 0; }
+.timer { font-size: 1.4em; margin-bottom: 15px; }
 
-#instruction {
-  font-size: 1.6em;
-  margin: 20px 0;
-}
-
-/* Gums */
+/* Gums container */
 .gum {
   background: #ff9aa2;
-  padding: 15px;
+  padding: 12px;
   border-radius: 30px;
-  max-width: 360px;
-  margin: 20px auto;
-}
-
-/* Teeth row */
-.row {
+  margin: 10px auto;
+  max-width: 440px;
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 /* Tooth shape */
 .tooth {
-  width: 70px;
-  height: 90px;
+  width: 28px;
+  height: 50px;
   background: #fff;
-  border-radius: 0 0 30px 30px;
-  opacity: 0.3;
+  border-radius: 0 0 14px 14px;
+  opacity: 0.25;
   position: relative;
-  transition: opacity 0.3s, box-shadow 0.3s;
+  transition: 0.3s;
 }
-
 .tooth::after {
   content: "";
   position: absolute;
-  bottom: -12px;
+  bottom: -6px;
   left: 50%;
   transform: translateX(-50%);
-  width: 30px;
-  height: 20px;
+  width: 14px;
+  height: 8px;
   background: #fff;
-  border-radius: 0 0 15px 15px;
+  border-radius: 0 0 8px 8px;
 }
+.active { opacity: 1; box-shadow: 0 0 18px #00ffcc; }
 
-.bottom .tooth {
-  transform: rotate(180deg);
-}
-
-.front .tooth {
-  height: 80px;
-}
-
-.active {
-  opacity: 1;
-  box-shadow: 0 0 20px #00ffcc;
-}
-
-/* Button */
 button {
-  font-size: 1.5em;
-  padding: 15px 30px;
+  font-size: 1.4em;
+  padding: 12px 25px;
   border-radius: 12px;
   border: none;
   background: #ffcc00;
   cursor: pointer;
-  margin-top: 20px;
+  margin-top: 15px;
 }
-
-button:active {
-  transform: scale(0.95);
-}
+button:active { transform: scale(0.95); }
 </style>
 </head>
 
 <body>
-
 <h1>🪥 Let’s Brush Teeth!</h1>
 <div id="instruction">Press START</div>
+<div class="timer" id="timer"></div>
 
 <!-- TOP TEETH -->
-<div class="gum top">
-  <div class="row">
-    <div class="tooth" id="t0"></div>
-    <div class="tooth" id="t1"></div>
-    <div class="tooth" id="t2"></div>
-  </div>
-</div>
-
-<!-- FRONT TEETH -->
-<div class="gum front">
-  <div class="row">
-    <div class="tooth" id="t3"></div>
-    <div class="tooth" id="t4"></div>
-    <div class="tooth" id="t5"></div>
-  </div>
-</div>
+<div class="gum top" id="topLeft"></div>
+<div class="gum top" id="topMiddle"></div>
+<div class="gum top" id="topRight"></div>
 
 <!-- BOTTOM TEETH -->
-<div class="gum bottom">
-  <div class="row">
-    <div class="tooth" id="t6"></div>
-    <div class="tooth" id="t7"></div>
-    <div class="tooth" id="t8"></div>
-  </div>
-</div>
+<div class="gum bottom" id="bottomLeft"></div>
+<div class="gum bottom" id="bottomMiddle"></div>
+<div class="gum bottom" id="bottomRight"></div>
 
-<button onclick="nextStep()">START</button>
+<!-- FRONT TEETH -->
+<div class="gum front" id="frontLeft"></div>
+<div class="gum front" id="frontMiddle"></div>
+<div class="gum front" id="frontRight"></div>
+
+<button onclick="nextStep()" id="nextBtn">START</button>
 
 <script>
-const steps = [
-  { text: "AHH – TOP LEFT", active: [0] },
-  { text: "AHH – TOP MIDDLE", active: [1] },
-  { text: "AHH – TOP RIGHT", active: [2] },
+// Build teeth for each section
+const createTeeth = (containerId, count) => {
+  const container = document.getElementById(containerId);
+  for(let i=0;i<count;i++){
+    const tooth = document.createElement('div');
+    tooth.classList.add('tooth');
+    container.appendChild(tooth);
+  }
+};
 
-  { text: "AHH – BOTTOM LEFT", active: [6] },
-  { text: "AHH – BOTTOM MIDDLE", active: [7] },
-  { text: "AHH – BOTTOM RIGHT", active: [8] },
+// Section definitions
+const sections = [
+  { name:"AHH TOP LEFT", id:"topLeft", teeth:5 },
+  { name:"AHH TOP MIDDLE", id:"topMiddle", teeth:4 },
+  { name:"AHH TOP RIGHT", id:"topRight", teeth:5 },
 
-  { text: "EEE – FRONT LEFT", active: [3] },
-  { text: "EEE – FRONT MIDDLE", active: [4] },
-  { text: "EEE – FRONT RIGHT", active: [5] },
+  { name:"AHH BOTTOM LEFT", id:"bottomLeft", teeth:5 },
+  { name:"AHH BOTTOM MIDDLE", id:"bottomMiddle", teeth:4 },
+  { name:"AHH BOTTOM RIGHT", id:"bottomRight", teeth:5 },
 
-  { text: "ALL DONE! AMAZING BRUSHING! 🦷✨", active: [] }
+  { name:"EEE FRONT LEFT", id:"frontLeft", teeth:5 },
+  { name:"EEE FRONT MIDDLE", id:"frontMiddle", teeth:4 },
+  { name:"EEE FRONT RIGHT", id:"frontRight", teeth:5 },
 ];
 
+sections.forEach(sec => createTeeth(sec.id, sec.teeth));
+
 let currentStep = -1;
+let timerInterval;
+let remainingTime = 20;
 
 function nextStep() {
+  // Stop previous timer
+  if(timerInterval) clearInterval(timerInterval);
+  remainingTime = 20;
+  document.getElementById('timer').innerText = "";
+
+  // Clear all teeth highlights
+  document.querySelectorAll('.tooth').forEach(t => t.classList.remove('active'));
+
   currentStep++;
+  if(currentStep >= sections.length){
+    document.getElementById('instruction').innerText = "ALL DONE! AMAZING BRUSHING! 🦷✨";
+    document.getElementById('timer').innerText = "";
+    document.getElementById('nextBtn').style.display = "none";
+    return;
+  }
 
-  document.querySelectorAll(".tooth").forEach(t =>
-    t.classList.remove("active")
-  );
+  const sec = sections[currentStep];
+  document.getElementById('instruction').innerText = `Brush ${sec.name}`;
+  
+  // Highlight teeth in this section
+  const container = document.getElementById(sec.id);
+  container.querySelectorAll('.tooth').forEach(t => t.classList.add('active'));
 
-  if (currentStep >= steps.length) return;
-
-  document.getElementById("instruction").innerText =
-    steps[currentStep].text;
-
-  steps[currentStep].active.forEach(i =>
-    document.getElementById("t" + i).classList.add("active")
-  );
+  // Start timer
+  document.getElementById('timer').innerText = `Time left: ${remainingTime}s`;
+  timerInterval = setInterval(()=>{
+    remainingTime--;
+    document.getElementById('timer').innerText = `Time left: ${remainingTime}s`;
+    if(remainingTime<=0){
+      clearInterval(timerInterval);
+      document.getElementById('timer').innerText = "Time's up! Press NEXT";
+    }
+  },1000);
 }
 </script>
-
 </body>
 </html>
