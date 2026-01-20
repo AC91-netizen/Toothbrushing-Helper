@@ -6,87 +6,87 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #0a3d62;
-    color: #fff;
-    text-align: center;
-    padding: 20px;
-  }
+body {
+  font-family: Arial, sans-serif;
+  background: #0a3d62;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
 
-  h1 {
-    font-size: 2em;
-  }
+h1 { font-size: 2em; }
 
-  #instruction {
-    font-size: 1.6em;
-    margin: 20px 0;
-  }
+#instruction {
+  font-size: 1.6em;
+  margin: 20px 0;
+}
 
-  #mouth {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-    max-width: 320px;
-    margin: 30px auto;
-  }
+/* Gums */
+.gum {
+  background: #ff9aa2;
+  padding: 15px;
+  border-radius: 30px;
+  max-width: 360px;
+  margin: 20px auto;
+}
 
-  .tooth {
-    width: 90px;
-    height: 120px;
-    background: #ffffff;
-    border-radius: 0 0 45px 45px;
-    opacity: 0.3;
-    position: relative;
-    transition: 0.3s;
-  }
+/* Teeth row */
+.row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
 
-  /* Bottom teeth flip */
-  .bottom {
-    transform: rotate(180deg);
-  }
+/* Tooth shape */
+.tooth {
+  width: 70px;
+  height: 90px;
+  background: #fff;
+  border-radius: 0 0 30px 30px;
+  opacity: 0.3;
+  position: relative;
+  transition: opacity 0.3s, box-shadow 0.3s;
+}
 
-  /* Front teeth slightly smaller */
-  .front {
-    height: 100px;
-  }
+.tooth::after {
+  content: "";
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 20px;
+  background: #fff;
+  border-radius: 0 0 15px 15px;
+}
 
-  .tooth::before {
-    content: "";
-    position: absolute;
-    bottom: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40px;
-    height: 25px;
-    background: #fff;
-    border-radius: 0 0 20px 20px;
-  }
+.bottom .tooth {
+  transform: rotate(180deg);
+}
 
-  .active {
-    opacity: 1;
-    box-shadow: 0 0 25px #00ffcc;
-    animation: wiggle 0.6s infinite alternate;
-  }
+.front .tooth {
+  height: 80px;
+}
 
-  @keyframes wiggle {
-    from { transform: translateY(0); }
-    to { transform: translateY(4px); }
-  }
+.active {
+  opacity: 1;
+  box-shadow: 0 0 20px #00ffcc;
+}
 
-  button {
-    font-size: 1.5em;
-    padding: 15px 30px;
-    border-radius: 10px;
-    border: none;
-    background: #ffcc00;
-    cursor: pointer;
-    margin-top: 20px;
-  }
+/* Button */
+button {
+  font-size: 1.5em;
+  padding: 15px 30px;
+  border-radius: 12px;
+  border: none;
+  background: #ffcc00;
+  cursor: pointer;
+  margin-top: 20px;
+}
 
-  button:hover {
-    transform: scale(1.05);
-  }
+button:active {
+  transform: scale(0.95);
+}
 </style>
 </head>
 
@@ -95,21 +95,31 @@
 <h1>🪥 Let’s Brush Teeth!</h1>
 <div id="instruction">Press START</div>
 
-<div id="mouth">
-  <!-- TOP TEETH -->
-  <div class="tooth" id="t0"></div>
-  <div class="tooth" id="t1"></div>
-  <div class="tooth" id="t2"></div>
+<!-- TOP TEETH -->
+<div class="gum top">
+  <div class="row">
+    <div class="tooth" id="t0"></div>
+    <div class="tooth" id="t1"></div>
+    <div class="tooth" id="t2"></div>
+  </div>
+</div>
 
-  <!-- FRONT TEETH -->
-  <div class="tooth front" id="t3"></div>
-  <div class="tooth front" id="t4"></div>
-  <div class="tooth front" id="t5"></div>
+<!-- FRONT TEETH -->
+<div class="gum front">
+  <div class="row">
+    <div class="tooth" id="t3"></div>
+    <div class="tooth" id="t4"></div>
+    <div class="tooth" id="t5"></div>
+  </div>
+</div>
 
-  <!-- BOTTOM TEETH -->
-  <div class="tooth bottom" id="t6"></div>
-  <div class="tooth bottom" id="t7"></div>
-  <div class="tooth bottom" id="t8"></div>
+<!-- BOTTOM TEETH -->
+<div class="gum bottom">
+  <div class="row">
+    <div class="tooth" id="t6"></div>
+    <div class="tooth" id="t7"></div>
+    <div class="tooth" id="t8"></div>
+  </div>
 </div>
 
 <button onclick="nextStep()">START</button>
@@ -145,4 +155,11 @@ function nextStep() {
   document.getElementById("instruction").innerText =
     steps[currentStep].text;
 
-  steps[currentStep].active.forEach(i
+  steps[currentStep].active.forEach(i =>
+    document.getElementById("t" + i).classList.add("active")
+  );
+}
+</script>
+
+</body>
+</html>
